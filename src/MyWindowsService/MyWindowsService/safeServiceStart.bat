@@ -23,12 +23,12 @@ GOTO ResolveInitialState
 :StartService
 echo Starting %1 on %server%
 sc %server% start %1 >NUL
-
 GOTO StartingService
+
 :StartingServiceDelay
 echo Waiting for %1 to start
-timeout 5
-::ping -n 2 127.0.0.1 >NUL 
+ping -n 2 127.0.0.1 >NUL 
+
 :StartingService
 SC %server% query %1 | FIND "ESTADO" | FIND "RUNNING" >NUL
 IF errorlevel 1 GOTO StartingServiceDelay

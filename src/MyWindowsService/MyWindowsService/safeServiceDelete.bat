@@ -4,7 +4,7 @@
 IF [%1]==[] GOTO usage
 IF NOT "%2"=="" SET server=%2
 
-SC %server% query %1
+SC %server% query %1 >NUL
 IF errorlevel 1060 GOTO ServiceNotFound
 IF errorlevel 1722 GOTO SystemOffline
 IF errorlevel 1001 GOTO DeletingServiceDelay
@@ -23,12 +23,13 @@ GOTO ResolveInitialState
 
 :StopService
 echo Stopping %1 on %server%
-sc %server% stop %1 %3
-
+sc %server% stop %1 %3 >NUL
 GOTO StoppingService
+
 :StoppingServiceDelay
 echo Waiting for %1 to stop
-ping -n 2 127.0.0.1 > NUL
+ping -n 2 127.0.0.1 >NUL
+
 :StoppingService
 SC %server% query %1 | FIND "ESTADO" | FIND "STOPPED" >NUL
 IF errorlevel 1 GOTO StoppingServiceDelay
@@ -38,12 +39,13 @@ echo %1 on %server% is stopped
 GOTO DeleteService
 
 :DeleteService
-SC %server% delete %1
-
+SC %server% delete %1 >NUL
 GOTO DeletingService
+
 :DeletingServiceDelay
 echo Waiting for %1 to get deleted
-ping -n 2 127.0.0.1 > NUL
+ping -n 2 127.0.0.1 >NUL
+
 :DeletingService
 SC %server% query %1 >NUL
 IF NOT errorlevel 1060 GOTO DeletingServiceDelay
