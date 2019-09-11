@@ -4,7 +4,7 @@
 IF [%1]==[] GOTO usage
 IF NOT "%2"=="" SET server=%2
 
-SC %server% query %1
+SC %server% query %1 >NUL
 IF errorlevel 1060 GOTO ServiceNotFound
 IF errorlevel 1722 GOTO SystemOffline
 
@@ -17,17 +17,18 @@ SC %server% query %1 | FIND "ESTADO" | FIND "PAUSED" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO SystemOffline
 echo Service State is changing, waiting for service to resolve its state before making changes
 sc %server% query %1 | Find "ESTADO" >NUL
-ping -n 2 127.0.0.1 > NUL
+ping -n 2 127.0.0.1 >NUL
 GOTO ResolveInitialState
 
 :StartService
 echo Starting %1 on %server%
-sc %server% start %1
+sc %server% start %1 >NUL
 
 GOTO StartingService
 :StartingServiceDelay
 echo Waiting for %1 to start
-ping -n 2 127.0.0.1 > NUL 
+timeout 5
+::ping -n 2 127.0.0.1 >NUL 
 :StartingService
 SC %server% query %1 | FIND "ESTADO" | FIND "RUNNING" >NUL
 IF errorlevel 1 GOTO StartingServiceDelay
