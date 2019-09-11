@@ -4,33 +4,33 @@
 IF [%1]==[] GOTO usage
 IF NOT "%2"=="" SET server=%2
 
-SC %server% query %1 >NUL
+SC %server% query %1
 IF errorlevel 1060 GOTO ServiceNotFound
 IF errorlevel 1722 GOTO SystemOffline
 IF errorlevel 1001 GOTO DeletingServiceDelay
 
 :ResolveInitialState
-SC %server% query %1 | FIND "STATE" | FIND "RUNNING" >NUL
+SC %server% query %1 | FIND "ESTADO" | FIND "RUNNING" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO StopService
-SC %server% query %1 | FIND "STATE" | FIND "STOPPED" >NUL
+SC %server% query %1 | FIND "ESTADO" | FIND "STOPPED" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO StoppedService
-SC %server% query %1 | FIND "STATE" | FIND "PAUSED" >NUL
+SC %server% query %1 | FIND "ESTADO" | FIND "PAUSED" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO SystemOffline
 echo Service State is changing, waiting for service to resolve its state before making changes
-sc %server% query %1 | Find "STATE" >NUL
+sc %server% query %1 | Find "ESTADO" >NUL
 ping -n 2 127.0.0.1 > NUL
 GOTO ResolveInitialState
 
 :StopService
 echo Stopping %1 on %server%
-sc %server% stop %1 %3 >NUL
+sc %server% stop %1 %3
 
 GOTO StoppingService
 :StoppingServiceDelay
 echo Waiting for %1 to stop
 ping -n 2 127.0.0.1 > NUL
 :StoppingService
-SC %server% query %1 | FIND "STATE" | FIND "STOPPED" >NUL
+SC %server% query %1 | FIND "ESTADO" | FIND "STOPPED" >NUL
 IF errorlevel 1 GOTO StoppingServiceDelay
 
 :StoppedService
@@ -38,7 +38,9 @@ echo %1 on %server% is stopped
 GOTO DeleteService
 
 :DeleteService
-SC %server% delete %1 >NUL
+SC %server% delete %1
+
+GOTO DeletingService
 :DeletingServiceDelay
 echo Waiting for %1 to get deleted
 ping -n 2 127.0.0.1 > NUL
