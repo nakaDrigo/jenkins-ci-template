@@ -17,7 +17,7 @@ SC %server% query %1 | FIND "STATE" | FIND "PAUSED" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO SystemOffline
 echo Service State is changing, waiting for service to resolve its state before making changes
 sc %server% query %1 | Find "STATE" >NUL
-ping -n 10 127.0.0.1 >NUL
+ping -n 3 127.0.0.1 >NUL
 GOTO ResolveInitialState
 
 :StartService
@@ -27,7 +27,7 @@ GOTO StartingService
 
 :StartingServiceDelay
 echo Waiting for %1 to start
-ping -n 10 127.0.0.1 >NUL 
+ping -n 3 127.0.0.1 >NUL 
 
 :StartingService
 SC %server% query %1 | FIND "STATE" | FIND "RUNNING" >NUL

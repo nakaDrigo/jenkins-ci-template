@@ -28,7 +28,7 @@ GOTO StoppingService
 
 :StoppingServiceDelay
 echo Waiting for %1 to stop
-ping -n 10 127.0.0.1 >NUL
+ping -n 3 127.0.0.1 >NUL
 
 :StoppingService
 SC %server% query %1 | FIND "STATE" | FIND "STOPPED" >NUL
@@ -44,7 +44,7 @@ GOTO DeletingService
 
 :DeletingServiceDelay
 echo Waiting for %1 to get deleted
-ping -n 10 127.0.0.1 >NUL
+ping -n 3 127.0.0.1 >NUL
 
 :DeletingService
 SC %server% query %1 >NUL
