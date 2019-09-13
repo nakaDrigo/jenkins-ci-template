@@ -9,14 +9,14 @@ IF errorlevel 1060 GOTO ServiceNotFound
 IF errorlevel 1722 GOTO SystemOffline
 
 :ResolveInitialState
-SC %server% query %1 | FIND "STATUS" | FIND "STOPPED" >NUL
+SC %server% query %1 | FIND "STATE" | FIND "STOPPED" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO StartService
-SC %server% query %1 | FIND "STATUS" | FIND "RUNNING" >NUL
+SC %server% query %1 | FIND "STATE" | FIND "RUNNING" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO StartedService
-SC %server% query %1 | FIND "STATUS" | FIND "PAUSED" >NUL
+SC %server% query %1 | FIND "STATE" | FIND "PAUSED" >NUL
 IF errorlevel 0 IF NOT errorlevel 1 GOTO SystemOffline
 echo Service State is changing, waiting for service to resolve its state before making changes
-sc %server% query %1 | Find "STATUS" >NUL
+sc %server% query %1 | Find "STATE" >NUL
 ping -n 10 127.0.0.1 >NUL
 GOTO ResolveInitialState
 
@@ -30,7 +30,7 @@ echo Waiting for %1 to start
 ping -n 10 127.0.0.1 >NUL 
 
 :StartingService
-SC %server% query %1 | FIND "STATUS" | FIND "RUNNING" >NUL
+SC %server% query %1 | FIND "STATE" | FIND "RUNNING" >NUL
 IF errorlevel 1 GOTO StartingServiceDelay
 
 :StartedService
